@@ -1,7 +1,7 @@
 import { React, useEffect, useState } from "react";
 import {Link} from "react-router-dom";
 
-const Kit = () => {
+const Kit = (props) => {
 
   const [products, setProducts] = useState({})
     const fetchkit = async () => {
@@ -60,7 +60,7 @@ const Kit = () => {
   <div className="container px-5 py-24 mx-auto">
     <div className="flex flex-wrap -m-4 justify-center">
       {Object.keys(products).map((items) =>(
-       <Link key={products[items]._id} to={`/kit/${products[items].slug}`} className="nav-link lg:w-1/5 md:w-1/2 p-4 w-full  shadow-lg m-3">
+       <Link key={products[items]._id} to={`/kit/${products[items].slug}`} onClick={props.clLink("kit")} className="nav-link lg:w-1/5 md:w-1/2 p-4 w-full  shadow-lg m-3">
         <div>
         <a className="block relative rounded overflow-hidden">
           <img alt="ecommerce" className="object-cover object-center w-full h-full block" src={products[items].img} />

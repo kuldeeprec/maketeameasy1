@@ -11,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 // Available Routes
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/addproducts', require('./routes/addproducts'));
 app.use('/api/getproducts', require('./routes/getproducts'));
 app.use('/api/updateproducts', require('./routes/updateproducts'));

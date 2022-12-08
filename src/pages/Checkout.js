@@ -2,12 +2,87 @@ import React from "react";
 import { AiOutlinePlusCircle, AiOutlineMinusCircle } from 'react-icons/ai';
 import { BsFillBagCheckFill } from 'react-icons/bs';
 import { Link } from 'react-router-dom';
+import {Helmet} from "react-helmet";
+import { useState } from 'react';
 
-const checkout = (props) => {
+const Checkout = (props) => {
+
+  const initiatePayment = async () => {
+    let txnToken;
+    let oid = Math.floor(Math.random() * Date.now, {email: "email"} )
+    let ct = props.cart, sb = props.subTotal;
+    const data = {ct, sb, oid};
+    let a = await fetch(`http://localhost:3000/api/pretransaction` , {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    let txnRes = await a.json();
+    console.log(txnRes);
+    txnToken = txnRes.txnToken;
+
+    function onScriptLoad(){
+      var config = {
+      "root": "",
+      "flow": "DEFAULT",
+      "data": {
+      "orderId": oid, /* update order id */
+      "token": "txnToken", /* update token value */
+      "tokenType": "TXN_TOKEN",
+      "amount": props.subTotal /* update amount */
+      },
+      "handler": {
+      "notifyMerchant": function(eventName,data){
+      console.log("notifyMerchant handler function called");
+      console.log("eventName => ",eventName);
+      console.log("data => ",data);
+      }
+      }
+      };
+      window.Paytm.CheckoutJS.init(config).then(function onSuccess() {
+      // after successfully updating configuration, invoke JS Checkout
+      window.Paytm.CheckoutJS.invoke();
+      }).catch(function onError(error){
+      console.log("error => ",error);
+      });
+    }
+  }
   
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [phone, setPhone] = useState('')
+  const [address, setAddress] = useState('')
+  const [pincode, setPincode] = useState('')
+
+  const handleChange = (e) => {
+    if(e.target.name=='name') {
+      setName(e.target.value);
+    }
+    else if(e.target.email=='email') {
+      setEmail(e.target.value);
+    }
+    else if(e.target.phone=='phone') {
+      setPhone(e.target.value);
+    }
+    else if(e.target.address=='address') {
+      setAddress(e.target.value);
+    }
+    else if(e.target.pincode=='pincode') {
+      setPincode(e.target.value);
+    }
+  }
+
   return (
     <>
       <div className="container m-auto">
+      <div className="application">
+            <Helmet>
+              <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0"/>
+              <script type="application/javascript" src={`${process.env.NEXT_PUBLIC_PAYTM_HOST}/merchantpgui/checkoutjs/merchants/${process.env.NEXT_PUBLIC_PAYTM_HOST}.js`} crossorigin="anonymous"></script>
+            </Helmet>
+            </div>
         <h3 className="font-bold text-center my-4">1.Checkout</h3>
         <h2 className="font-bold text-xl">1. Delivery Details</h2>
         <div className="mx-auto flex my-2">
@@ -141,11 +216,11 @@ const checkout = (props) => {
           <span className="font-bold">SubTototal:₹ {props.subTotal}</span>
        </div>
        <div className="mx-8">
-       <Link to="/checkout"><button class="flex mx-auto mt-16 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"><BsFillBagCheckFill onClick={props.clearCart} className="mx-2 my-1" />Pay ₹</button></Link>
+       <Link to="/checkout"><button disabled={true} onClick={initiatePayment} className="disabled:bg-blue-100 flex mx-auto mt-16 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"><BsFillBagCheckFill onClick={props.clearCart} className="mx-2 my-1" />Pay ₹</button></Link>
        </div>
       </div>
     </>
   );
 };
 
-export default checkout;
+export default Checkout;

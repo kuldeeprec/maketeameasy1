@@ -88,15 +88,15 @@ const Slug = (props) => {
     const fetchslug = async () => {
     const slg = params.userId;
     const tk = localStorage.getItem("lin");
-    console.log(typeof(tk), "12345")
+    // console.log(tk, "12345")
     const response = await fetch(
       `http://localhost:5000/api/getproducts/getproduct`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          body: JSON.stringify({prod: tk})
         },
+        body: JSON.stringify({prod: tk})
       }
     );
     const json = await response.json();
@@ -109,7 +109,7 @@ const Slug = (props) => {
              product = item;
           }
     }
-    console.log(product,"34")
+    console.log(products,"34")
     setProduct(product);
     setColor(product.color);
     setSize(product.size);
@@ -170,7 +170,6 @@ const Slug = (props) => {
      <ToastContainer />
   <div className="container px-5 py-16 mx-auto">
     <div className="lg:w-4/5 mx-auto flex flex-wrap">
-      {console.log(product.img,"Yes")}
       <img alt="ecommerce" className="lg:w-1/2 w-full lg:h-auto object-cover object-center rounded shadow-lg" src={product.img} />
       <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
         <h2 className="text-sm title-font text-gray-500 tracking-widest">BRAND NAME</h2>
