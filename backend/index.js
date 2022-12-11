@@ -15,6 +15,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/addproducts', require('./routes/addproducts'));
 app.use('/api/getproducts', require('./routes/getproducts'));
 app.use('/api/updateproducts', require('./routes/updateproducts'));
+app.use('/api/searchplayer', require('./routes/searchplayer'));
 
 app.listen(port, () => {
   console.log(`iChat listening at http://localhost:${port}`)

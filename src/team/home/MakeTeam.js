@@ -29,17 +29,34 @@ const MakeTeam = () => {
       // console.log(loc[i].Name)
     }
     setPlayPlace(place);
-    setService(true)
-    // for(let i=0;i<playPlace.length;i++)
-    // {
-    //       // place = loc[i].Name;
-    //       console.log(playPlace[i]);
-    // }
+    setService(true);
   }
 
 
   const onChangePin = (e) => {
     setPin(e.target.value)
+  }
+
+  const [playPlayers, setPlayPlayers] = useState([]);
+
+  const searchPlayer = async (event) => {
+    let grname = event.target.value;
+    const response = await fetch(
+      `http://localhost:5000/api/searchplayer/getplayer`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ groundname: grname, groundpin: pin })
+      }
+    );
+    const json = await response.json();
+    setPlayPlayers(json)
+    console.log(json);
+    Object.entries(json).forEach(([key, value]) => {
+      console.log(value.name);
+    })
   }
 
   return (
@@ -59,20 +76,20 @@ const MakeTeam = () => {
               </button>
             </div>
             <div className="row">
-              {playPlace.map(place => <button type="button" key={place} className="btn btn-primary btn-lg my-2"><h3>{place}</h3></button>)}
+              {playPlace.map(place => <button type="button" key={place} onClick={searchPlayer} value={place} className="btn btn-primary my-2"><h5>{place}</h5></button>)}
             </div>
 
           </div>
           <div className="col-sm" id="plDetail">
             <div
               className="100 items-center justify-center leading-7 space-y-8 p-8 h-full">
-              <div>
+              {playPlayers.map(players => <div>
                 <div className="row">
                   <div className="col-md-2">
                     <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
                   </div>
                   <div className="col-md-2 my-3">
-                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
+                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>{players.name}</p>
                   </div>
                 </div>
                 <p>Make Change in thought, life automatically will Change . . .</p>
@@ -85,83 +102,19 @@ const MakeTeam = () => {
                     <form>
                       <div className="row">
                         <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="Message" />
+                          <input style={{ width: "150px" }} type="text" className="form-control" placeholder="Message" />
                         </div>
                         <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="DD-MM-YYYY" />
+                          <input style={{ width: "150px" }} type="text" className="form-control" placeholder="DD-MM-YYYY" />
                         </div>
                         <div className="col-md-4">
-                        <button type="button" className="btn btn-primary" style={{ width: "150px" }}>Send</button>
+                          <button type="button" className="btn btn-primary" style={{ width: "150px" }}>Send</button>
                         </div>
                       </div>
                     </form>
                   </div>
                 </div>
-              </div>
-              <div>
-                <div className="row">
-                  <div className="col-md-2">
-                    <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
-                  </div>
-                  <div className="col-md-2 my-3">
-                    <p style={{ fontWeight: "bold" }}>Aiswariya Roy</p>
-                  </div>
-                </div>
-                <p>Make Change in thought, life automatically will Change . . .</p>
-                <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
-                <div className="row">
-                  <div className="col-md-3 my-2">
-                    <button type="button" className="btn btn-primary my-2" style={{ width: "150px" }}>Add Friend +</button>
-                  </div>
-                  <div className="col my-3">
-                    <form>
-                      <div className="row">
-                        <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="Message" />
-                        </div>
-                        <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="DD-MM-YYYY" />
-                        </div>
-                        <div className="col-md-4">
-                        <button type="button" className="btn btn-primary" style={{ width: "150px" }}>Send</button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div className="row">
-                  <div className="col-md-2">
-                    <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
-                  </div>
-                  <div className="col-md-2 my-3">
-                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
-                  </div>
-                </div>
-                <p>Make Change in thought, life automatically will Change . . .</p>
-                <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
-                <div className="row">
-                  <div className="col-md-3 my-2">
-                    <button type="button" className="btn btn-primary my-2" style={{ width: "150px"}}>Add Friend +</button>
-                  </div>
-                  <div className="col my-3">
-                    <form>
-                      <div className="row">
-                        <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="Message" />
-                        </div>
-                        <div className="col-md-4">
-                          <input style={{ width: "150px"}} type="text" className="form-control" placeholder="DD-MM-YYYY" />
-                        </div>
-                        <div className="col-md-4">
-                        <button type="button" className="btn btn-primary" style={{ width: "150px" }}>Send</button>
-                        </div>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-              </div>
+              </div>)}
             </div>
           </div>
         </div>

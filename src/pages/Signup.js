@@ -1,53 +1,85 @@
-import React, {useState} from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const Signup = (props) => {
+  const [pin, setPin] = useState()
+  const [playPlace, setPlayPlace] = useState([]);
+  const [service, setService] = useState(false);
+  const checkArea = async () => {
+    let pins = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
+    let pinJson = await pins.json()
+    let location
+    Object.entries(pinJson).forEach(([key, value]) => {
+      location = value;
+    })
+    let loc;
+    Object.entries(location).forEach(([key, value]) => {
+      if (key === "PostOffice") {
+        loc = value;
+      }
+    })
+    let place = [];
+    for (let i = 0; i < loc.length; i++) {
+      place.push(loc[i].Name)
+    }
+    setPlayPlace(place);
+    setService(true)
+  }
 
-  const [credentials, setCredentials] = useState({name:"",signupEmail: "", district:"", place:"", nearground:"", distance:0 ,password:"",confirmpassword:""})
+
+  const onChangePin = (e) => {
+    setPin(e.target.value)
+    // console.log(pin)
+    // if(pin.length==5)
+    // {
+    //   checkArea();
+    // }
+  }
+  const [credentials, setCredentials] = useState({ name: "", signupEmail: "", district: "", place: "", password: "", confirmpassword: "" })
   let navigate = useNavigate()
-    const handleSubmit = async (e) =>{
-        e.preventDefault();
-        const {name, signupEmail, district,place,nearground,distance, password, confirmpassword}=credentials;
-            const response = await fetch(`http://localhost:5000/api/auth/createuser`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({name, signupEmail, district, place, nearground, distance, password, confirmpassword}) 
-            });
-            const json = await response.json()
-            // console.log(json,"No");
-            if(json.success){
-              // save the auth token and redirect
-              localStorage.setItem('token', json.authtoken);
-              console.log(json,"No");
-              navigate("/");
-              props.sucReg(1);
-            }
-            else
-            {
-              // alert("Invalid credential");
-              toast.error('You are not registered yet!', {
-                position: "top-right",
-                autoClose: 5000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                });
-            }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const { name, signupEmail, district, place, password, confirmpassword } = credentials;
+    console.log(name, signupEmail, pin, district,  place, "place");
+    let pincode = pin;
+    const response = await fetch(`http://localhost:5000/api/auth/createuser`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, signupEmail, district, pincode, place, password, confirmpassword })
+    });
+    const json = await response.json()
+    // console.log(json,"No");
+    if (json.success) {
+      // save the auth token and redirect
+      localStorage.setItem('token', json.authtoken);
+      console.log(json, "No");
+      navigate("/");
+      props.sucReg(1);
     }
-  const onChange = (e)=>
-    {
-        // setCredentials({name:"e.target.name" , district:"e.target.email", place:"e.target.district", nearground:"e.target.nearground", distance:"e.target.distance" ,password:"e.target.password",confirmpassword:"e.target.confirmpassword"})
-        setCredentials({...credentials, [e.target.name]: e.target.value})
+    else {
+      // alert("Invalid credential");
+      toast.error('You are not registered yet!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
     }
+  }
+  const onChange = (e) => {
+    // setCredentials({name:"e.target.name" , district:"e.target.email", place:"e.target.district", nearground:"e.target.nearground", distance:"e.target.distance" ,password:"e.target.password",confirmpassword:"e.target.confirmpassword"})
+    setCredentials({ ...credentials, [e.target.name]: e.target.value })
+  }
   return (
     <>
-    <ToastContainer />
+      <ToastContainer />
       <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div className="w-full max-w-md space-y-8">
           <div>
@@ -73,18 +105,26 @@ const Signup = (props) => {
                 <label htmlFor="district" className="form-label">District</label>
                 <input type="text" className="form-control" id="district" onChange={onChange} name="district" />
               </div>
+
               <div className="mb-3">
-                <label htmlFor="nearground" className="form-label">Near Ground</label>
-                <input type="text" className="form-control" id="nearground" onChange={onChange} name="nearground" />
+                <label htmlFor="pincode" className="form-label">Pincode</label>
+                <input type="text" className="form-control" id="pincode" onChange={onChangePin} name="pincode" />
               </div>
-              <div className="mb-3">
+              <p onClick={checkArea} className="w-30 text-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700">
+                Submit
+              </p>
+              <select className="form-select my-3" name="place" onChange={onChange} aria-label="Default select example">
+                <option selected>Choose Your Ground</option>
+                {playPlace.map(place => <option key={place} value={place}>{place}</option>)}
+              </select>
+              {/* <div className="mb-3 my-1">
                 <label htmlFor="place" className="form-label">Place</label>
                 <input type="text" className="form-control" id="place" onChange={onChange} name="place" />
-              </div>
-              <div className="mb-3">
+              </div> */}
+              {/* <div className="mb-3">
                 <label htmlFor="distance" className="form-label">Distance</label>
                 <input type="number" className="form-control" id="distance" onChange={onChange} name="distance" />
-              </div>
+              </div> */}
               <div className="mb-3">
                 <label htmlFor="password" className="form-label">Password</label>
                 <input type="password" className="form-control" id="password" onChange={onChange} name="password" />

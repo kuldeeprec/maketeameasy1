@@ -2,11 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    fistname:{
-        type: String,
-        required: true
-    },
-    lastname:{
+    name:{
         type: String,
         required: true
     },
@@ -19,16 +15,13 @@ const userSchema = new Schema({
         type: String,
         required: true
     },
-    nearground:{
+    pincode:{
         type: String,
         required: true
     },
     place:{
         type: String,
         required: true
-    },
-    distance:{
-        type: Number
     },
     password:{
         type: String,

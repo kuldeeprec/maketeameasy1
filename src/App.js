@@ -4,6 +4,7 @@ import Footer from './components/Footer';
 import Bat from './pages/Bat';
 import Checkout from './pages/Checkout';
 import Ball from './pages/Ball';
+import Profile from './pages/Profile';
 import Kit from './pages/Kit';
 import Order from './pages/Order';
 import Orders from './pages/Orders';
@@ -13,6 +14,7 @@ import Forgot from './pages/Forgot';
 import Index from './pages/Index';
 import Slug from './pages/product/Slug';
 import Home from './players/home/Home';
+import Friends from './players/friends/Friends';
 import Friendrequest from './players/friendrequest/Friendrequest';
 import MakeTeam from './team/home/MakeTeam';
 import { useState, useEffect } from 'react';
@@ -185,6 +187,12 @@ const App = () =>  {
         
         </Route>
         <Route path="/MakeTeam" element={<MakeTeam />}>
+        
+        </Route>
+        <Route path="/friends" element={<Friends />}>
+        
+        </Route>
+        <Route path="/profile" element={<Profile />}>
         
         </Route>
     </Routes>
