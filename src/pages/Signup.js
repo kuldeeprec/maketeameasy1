@@ -31,11 +31,6 @@ const Signup = (props) => {
 
   const onChangePin = (e) => {
     setPin(e.target.value)
-    // console.log(pin)
-    // if(pin.length==5)
-    // {
-    //   checkArea();
-    // }
   }
   const [credentials, setCredentials] = useState({ name: "", signupEmail: "", district: "", place: "", password: "", confirmpassword: "" })
   let navigate = useNavigate()

@@ -20,12 +20,12 @@ const Login = (props) => {
           });
           const json = await response.json();
           const mail = json.mail;
-          // console.log(json);
-          if(json.authtoken)
+          let authtoken = json.authtoken
+          if(authtoken)
           {
               // save the auth and redirect
               // console.log(json.authtoken);
-              localStorage.setItem('token', json.authtoken);
+              localStorage.setItem('token', {mail, authtoken});
               navigate("/");
               props.sucReg(2);
           }

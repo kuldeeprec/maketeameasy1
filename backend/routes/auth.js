@@ -1,5 +1,6 @@
 const express = require('express');
 const User = require('../models/User');
+const Person = require('../models/Person');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 var jwt = require('jsonwebtoken');
@@ -49,6 +50,9 @@ router.post('/createuser', [
         place: req.body.place,
         distance: req.body.distance,
         password: secPass,
+      });
+      await Person.create({
+        userId: req.body.signupEmail,
       });
       const data = {
         user: {

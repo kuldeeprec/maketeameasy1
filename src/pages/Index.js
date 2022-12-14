@@ -18,11 +18,13 @@ const Index = (props) => {
     });
     const json = await response.json();
     const mail = json.mail;
+    let authtoken = json.authtoken
     // console.log(json);
-    if (json.authtoken) {
+    if (authtoken) {
       // save the auth and redirect
       // console.log(json.authtoken);
-      localStorage.setItem('token', json.authtoken);
+      localStorage.setItem('token', authtoken );
+      localStorage.setItem('user_id', mail);
       navigate("/home");
       props.sucReg(2);
     }
