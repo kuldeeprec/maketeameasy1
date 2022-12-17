@@ -5,7 +5,6 @@ const MakeTeam = () => {
 
   const [pin, setPin] = useState()
   const [playPlace, setPlayPlace] = useState([]);
-  const [service, setService] = useState(false);
   const checkArea = async () => {
     let pins = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
     let pinJson = await pins.json()
@@ -29,7 +28,6 @@ const MakeTeam = () => {
       // console.log(loc[i].Name)
     }
     setPlayPlace(place);
-    setService(true);
   }
 
 
@@ -118,20 +116,42 @@ const MakeTeam = () => {
   const addFriend = async (event) => {
     let p1 = event.target.value;
     let p2 = localStorage.getItem('user_id');
-    console.log(p1, p2,"p2");
+    console.log(p1, p2, "p2");
     const response = await fetch(
-        `http://localhost:5000/api/friends/confirmfriend`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ reciever_id: p2, sender_id: p1 })
-        }
+      `http://localhost:5000/api/friends/confirmfriend`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ reciever_id: p2, sender_id: p1 })
+      }
     );
     const json = await response.json();
     console.log(json);
-}
+  }
+
+  const [credentials, setCredentials] = useState({ message: "", playing_date: "" });
+
+  const handleSubmit = async (e) => {
+    // let p1 = e.target.value;
+    e.preventDefault();
+    console.log( credentials.message, credentials.playing_date, "p1");
+    let p2 = localStorage.getItem('user_id');
+    const response = await fetch(`http://localhost:5000/api/playing_live/savemessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ message: credentials.message, playing_date: credentials.playing_date, send_id: p2, reci_id: "faizabadamit23@gmail.com" })
+    });
+    const json = await response.json();
+    console.log(json);
+  }
+
+  const onChange = (e) => {
+    setCredentials({ ...credentials, [e.target.name]: e.target.value })
+  }
 
   return (
     <div>
@@ -170,16 +190,16 @@ const MakeTeam = () => {
                 <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
                 <div className="row">
                   <div className="col my-3">
-                    <form>
+                    <form value={playPlayers1.signupEmail} onSubmit={handleSubmit} method="POST">
                       <div className="row">
                         <div className="col-md-4">
-                          <input style={{ width: "150px" }} type="text" className="form-control" placeholder="Message" />
+                          <input id="message" style={{ width: "150px" }} onChange={onChange} type="text" name="message" className="form-control" placeholder="Message" />
                         </div>
                         <div className="col-md-4">
-                          <input style={{ width: "150px" }} type="text" className="form-control" placeholder="DD-MM-YYYY" />
+                          <input id="playing_date" style={{ width: "150px" }} onChange={onChange} type="text" name="playing_date" className="form-control" placeholder="DD-MM-YYYY" />
                         </div>
                         <div className="col-md-4">
-                          <button type="button" className="btn btn-primary" style={{ width: "150px" }}>Send</button>
+                          <button type="submit" value={playPlayers1.signupEmail} className="btn btn-primary" style={{ width: "150px" }}>Send</button>
                         </div>
                       </div>
                     </form>
@@ -203,11 +223,11 @@ const MakeTeam = () => {
                       <button type="button" onClick={PendingFriend} value={players.signupEmail} className="btn btn-success my-2" style={{ width: "150px" }}>Pending</button>
                     </div>) :
                     (<div className="col-md-3 my-2">
-                    <button type="button" onClick={addFriend} value={players.friend_id} className="btn btn-primary my-2" style={{ width: "150px" }}>Confirm</button>
-                  </div>)}
+                      <button type="button" onClick={addFriend} value={players.friend_id} className="btn btn-primary my-2" style={{ width: "150px" }}>Confirm</button>
+                    </div>)}
                 </div>
               </div>)}
-                {playPlayers3.map(players => <div>
+              {playPlayers3.map(players => <div>
                 <div className="row">
                   <div className="col-md-2">
                     <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
@@ -220,8 +240,8 @@ const MakeTeam = () => {
                 <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
                 <div className="row">
                   <div className="col-md-3 my-2">
-                      <button type="button" onClick={PendingFriend} value={players.signupEmail} className="btn btn-primary my-2" style={{ width: "150px" }}>Add Friend +</button>
-                    </div>
+                    <button type="button" onClick={PendingFriend} value={players.signupEmail} className="btn btn-primary my-2" style={{ width: "150px" }}>Add Friend +</button>
+                  </div>
                 </div>
               </div>)}
             </div>

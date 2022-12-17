@@ -17,6 +17,8 @@ import Home from './players/home/Home';
 import Friends from './players/friends/Friends';
 import Friendrequest from './players/friendrequest/Friendrequest';
 import MakeTeam from './team/home/MakeTeam';
+import VideoHome from './video/pages/home/VideoHome';
+import Recording from './video/pages/recording/Recording';
 import { useState, useEffect } from 'react';
 import {
   BrowserRouter,
@@ -193,6 +195,12 @@ const App = () =>  {
         
         </Route>
         <Route path="/profile" element={<Profile />}>
+        
+        </Route>
+        <Route path="/videohome" element={<VideoHome />}>
+        
+        </Route>
+        <Route path="/recording" element={<Recording />}>
         
         </Route>
     </Routes>
