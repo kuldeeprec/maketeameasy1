@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom';
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
@@ -43,6 +43,15 @@ const Index = (props) => {
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value })
   }
+  const moveToHome = () => {
+    if(localStorage.getItem('user_id'))
+    {
+      navigate("/home")
+    }
+  }
+  // useEffect(() => {
+  //   // moveToHome();
+  // }, [])
   return (
     <div 
     style={{
@@ -51,7 +60,10 @@ const Index = (props) => {
     >
       <ToastContainer />
       <div className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md space-y-8">
+        {localStorage.getItem('user_id') ? (<button type="submit" onClick={moveToHome} style={{width: "100px"}} className="group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                Home
+              </button>) :
+        (<div className="w-full max-w-md space-y-8">
           <div>
             <img className="mx-auto h-35 w-auto" src="/home_logo.png" alt="Your Company" />
             <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Sign in to your account</h2>
@@ -91,7 +103,7 @@ const Index = (props) => {
               </button>
             </div>
           </form>
-        </div>
+        </div>)}
       </div>
     </div>
   )
