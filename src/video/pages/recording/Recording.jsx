@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState,useRef } from 'react'
 import moment from 'moment';
-import Navbar from '../../components/Navbar/Navbar'
+// import Navbar from '../../components/Navbar/Navbar'
 import next from '../../assets/next.png'
 import './recording.css'
 import Stats from '../../components/stats/Stats'
@@ -8,13 +8,27 @@ import Chat from '../../components/chat/Chat'
 import Interest from '../../components/interest/Interest';
 import ReactPlayer from 'react-player';
 import Transcript from '../../components/transcript/Transcript';
-
+import Controls from './Controls';
+const format = (seconds) => {
+  if (isNaN(seconds)) {
+    return `00:00`;
+  }
+  const date = new Date(seconds * 1000);
+  const hh = date.getUTCHours();
+  const mm = date.getUTCMinutes();
+  const ss = date.getUTCSeconds().toString().padStart(2, "0");
+  if (hh) {
+    return `${hh}:${mm.toString().padStart(2, "0")}:${ss}`;
+  }
+  return `${mm}:${ss}`;
+};
 const Recording = () => {
 
-  
   const [change, setChange] = useState(false)
   const [isTranscript, setIsTranscript] = useState(false)
+  const [timeDisplayFormat, setTimeDisplayFormat] = React.useState("normal");
   const [speed, setSpeed] = useState("1x")
+  
   const [isNav , setIsNav ] = useState({
     openInterest : false,
     openInteraction : false,
@@ -30,8 +44,12 @@ const Recording = () => {
     played: 0,
     loaded: 0,
     loadedSeconds: 0,
+    seeking: false,
   })
-
+  const controlsRef = useRef(null);
+  const playerRef = useRef(null);
+  const { playing, playedSeconds, duration, playbackSpeed, loaded, played } = states
+  
   const handleDuration = (duration) => {
     const totalDuration = new Date(duration * 1000).toISOString().slice(11, 19);
     // console.log(totalDuration)
@@ -40,7 +58,20 @@ const Recording = () => {
       duration: totalDuration
     })
   }
+  const handleSeekChange = (e, newValue) => {
+    console.log({ newValue });
+    setStates({ ...states, played: parseFloat(newValue / 100) });
+  };
+  const handleSeekMouseDown = (e) => {
+    setStates({ ...states, seeking: true });
+  };
 
+  const handleSeekMouseUp = (e, newValue) => {
+    console.log({ value: e.target });
+    setStates({ ...states, seeking: false });
+    // console.log(sliderRef.current.value)
+    playerRef.current.seekTo(newValue / 100, "fraction");
+  };
   const handleEnd = () => {
     setStates({
       ...states,
@@ -48,20 +79,27 @@ const Recording = () => {
     })
   }
 
-  const handleProgress = state => {
-    // console.log(state)
-    const playedSeconds = new Date(state.playedSeconds * 1000).toISOString().slice(11, 19);
-    setStates({
-      ...states,
-      playedSeconds: playedSeconds,
-      played: state.played,
-      loaded: state.loaded
-    })
-  }
-
-  const { playing, playedSeconds, duration, playbackSpeed, loaded, played } = states
+  const handleProgress = (changeState) => {
+    if (!states.seeking) {
+      setStates({ ...states, ...changeState });
+    }
+  };
 
 
+  const currentTime =
+    playerRef && playerRef.current
+      ? playerRef.current.getCurrentTime()
+      : "00:00";
+
+  const duration2 =
+    playerRef && playerRef.current ? playerRef.current.getDuration() : "00:00";
+  const elapsedTime =
+    timeDisplayFormat === "normal"
+      ? format(currentTime)
+      : `-${format(duration2 - currentTime)}`;
+
+  const totalDuration = format(duration2);
+  console.log(elapsedTime,totalDuration);
   const formatDate = moment().format('LL')
   return (
     <>
@@ -89,14 +127,16 @@ const Recording = () => {
             <div className={((isNav.openInterest || isNav.openInteraction || isNav.openCompany || isNav.openSlides) ? 'playerWrapper' : 'playerWrapper2')}>
               <div className="Player2">
                 <ReactPlayer
-                  url='https://www.youtube.com/watch?v=m8u-18Q0s7I'
+                  ref={playerRef}
+                  // url='https://www.youtube.com/watch?v=m8u-18Q0s7I'
+                  url='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4'
                   width='100%'
                   height='100%'
                   playing={playing}
                   // onDuration={handleDuration}
                   onEnded={handleEnd}
                   playbackRate={playbackSpeed}
-                  // onProgress={handleProgress}
+                  onProgress={handleProgress}
                 />
               </div>
             </div>
@@ -137,12 +177,24 @@ const Recording = () => {
             </div> */}
           </div>
           <div className="lower">
-            <div className="current">{playedSeconds}</div>
+            <div className="current">{elapsedTime}</div>
             <div className="length">
-              <div className="loadedLength" style={{ width: `${loaded * 100}%`, height: '5px', backgroundColor: 'white', zIndex: '1', position: 'absolute' }}></div>
-              <div className="playedLength" style={{ width: `${played * 100}%`, height: '5px', backgroundColor: '#3F51B5', zIndex: '2', position: 'absolute' }}></div>
+              {/* <div className="loadedLength" style={{ width: `${loaded * 100}%`, height: '5px', backgroundColor: 'white', zIndex: '1', position: 'absolute' }}></div>
+             <div className="playedLength" style={{ width: `${played * 100}%`, height: '5px', backgroundColor: '#3F51B5', zIndex: '2', position: 'absolute' }}></div> */}
+              <Controls
+            ref={controlsRef}
+            onSeek={handleSeekChange}
+            onSeekMouseDown={handleSeekMouseDown}
+            onSeekMouseUp={handleSeekMouseUp}
+            onDuration={handleDuration}
+            playing={playing}
+            played={played}
+            elapsedTime={elapsedTime}
+            totalDuration={totalDuration}
+          />
             </div>
-            <div className="total">{duration}</div>
+            <div className="total">{totalDuration}</div>
+            
           </div>
         </div>
         <div className='divider'></div>

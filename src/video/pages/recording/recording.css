@@ -182,10 +182,6 @@
 
 .length{
     width: 400px;
-    height: 5px;
-    background-color: rgb(201, 198, 198);
-    cursor: pointer;
-    position: relative;
 }
 
 .part3{

@@ -3,14 +3,15 @@ import './maketeam.css'
 
 const MakeTeam = () => {
 
+  // ----------------------Set a Pin-------------------
   const [pin, setPin] = useState()
   const [playPlace, setPlayPlace] = useState([]);
   const checkArea = async () => {
-    let pins = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
-    let pinJson = await pins.json()
+    let allArea = await fetch(`https://api.postalpincode.in/pincode/${pin}`)
+    let allAreaJson = await allArea.json();
     //  console.log(pinJson,"pinJson");
     let location
-    Object.entries(pinJson).forEach(([key, value]) => {
+    Object.entries(allAreaJson).forEach(([key, value]) => {
       location = value;
       // console.log(location,"location");
     })
@@ -39,10 +40,10 @@ const MakeTeam = () => {
   const [playPlayers2, setPlayPlayers2] = useState([]);
   const [playPlayers3, setPlayPlayers3] = useState([]);
   const [mapfriend, setMapfriend] = useState(new Map());
-  const searchPlayer = async (event) => {
+  const searchPlayer = async (e) => {
     let p = localStorage.getItem('user_id');
-    let grname = event.target.value;
-    console.log(grname);
+    let grname = e;
+    console.log(grname,"grname");
     const response = await fetch(
       `http://localhost:5000/api/searchplayer/getplayer`,
       {
@@ -89,7 +90,14 @@ const MakeTeam = () => {
     json4.map(player_obj => {
       not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
     })
-    setPlayPlayers2(pen_fri)
+    json1.map(player_obj => {
+      not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.signupEmail);
+    })
+    json1.map(player_obj => {
+      pen_fri = pen_fri.filter((item) => item.friend_id !== player_obj.signupEmail);
+    })
+    
+    setPlayPlayers2(pen_fri) 
     setPlayPlayers3(not_fri)
     // pending_friends.set(players.signupEmail, false)
     setMapfriend(pending_friends);
@@ -170,7 +178,7 @@ const MakeTeam = () => {
               </button>
             </div>
             <div className="row">
-              {playPlace.map(place => <button type="button" key={place} onClick={searchPlayer} value={place} className="btn btn-primary my-2"><h5>{place}</h5></button>)}
+              {playPlace.map(place => <button type="button" key={place} onClick={()=>searchPlayer(place)} value={place} className="btn btn-primary my-2"><h5>{place}</h5></button>)}
             </div>
 
           </div>

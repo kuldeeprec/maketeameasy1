@@ -1,5 +1,6 @@
 import './App.css';
 import Navbar from './pages/Navbar';
+import ShopHome from './pages/ShopHome';
 import Footer from './components/Footer';
 import Bat from './pages/Bat';
 import Checkout from './pages/Checkout';
@@ -14,6 +15,7 @@ import Forgot from './pages/Forgot';
 import Index from './pages/Index';
 import Slug from './pages/product/Slug';
 import Home from './players/home/Home';
+import News from './players/news/News';
 import Friends from './players/friends/Friends';
 import Friendrequest from './players/friendrequest/Friendrequest';
 import MakeTeam from './team/home/MakeTeam';
@@ -201,6 +203,13 @@ const App = () =>  {
         
         </Route>
         <Route path="/recording" element={<Recording />}>
+        
+        </Route>
+        <Route path="/news" element={<News />}>
+        
+        </Route>
+        <Route path="/shophome" element={<ShopHome cart={cart} addToCart={addToCart} removeFromCart={removeFromCart}
+      clearCart={clearCart} subTotal={subTotal} />}>
         
         </Route>
     </Routes>

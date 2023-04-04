@@ -1,15 +1,34 @@
-import mongoose from "mongoose";
-
+const mongoose = require('mongoose');
+const { Schema } = mongoose;
 
 const OrderSchema = new mongoose.Schema({
-    userId :{type: String, required: true},
-    products: [{
-        productId: {type : String},
-        quantity: {type: Number, default: 1}
-    }],
-    address: {type: String, required: true},
-    amount: {type: Number, required: true},
-    status: {type: String, default: 'Pending', required: true},
-}, {timestamps: true});
+        _id: { type: Schema.Types.ObjectId, required: true, auto: true }, //Unique Id by default genrate
+        id:{type: String, required: true},
+        amount: {
+            value: { type: Number },
+            currency: { type: String }
+        },
+        status: { type: String, required: true, default: "created" },
+        paymentMode: { type: String, default: "not-selected" },
+        agent:{
+            type: String
+        },
+        expiryDate:{ type: Date },
+        razorpay: {
+            Link: { type: String },
+            linkId: { type: String },
+            expiresOn: { type: Date },
+            status: { type: String }
+        },
+        name: { type: String},
+        email: { type: String},
+        phone: { type: String},
+        pincode: { type: String},
+        address: { type: String},
+    }, {
+        versionKey: false,
+        timestamps: true
+    });
 
-export default mongoose.model("Order", OrderSchema)
+const Order = mongoose.model('order', OrderSchema);
+module.exports = Order;

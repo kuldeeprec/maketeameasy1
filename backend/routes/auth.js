@@ -147,6 +147,22 @@ router.post('/getuser', fetchuser, async (req, res)=> {
     res.status(500).send("internal server Error occured");
   }
   })
+router.post('/finduser', async (req, res)=> {
+  
+  try{
+     const user = await User.findOne({signupEmail: req.body.id}).select("-password");
+     const people1 = await Person.findOne({userId: req.body.id})
+     console.log(people1,"people1");
+     let l = people1.profile_img.length;
+     let img1 = people1.profile_img[l-1].image_profile;
+     console.log(img1,"img1");
+     res.send({img1: img1, user: user});
+  
+  }catch(error){
+    console.error(error.message);
+    res.status(500).send("internal server Error occured");
+  }
+  })
 
 
 module.exports = router

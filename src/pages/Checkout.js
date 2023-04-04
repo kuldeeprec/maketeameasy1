@@ -6,49 +6,6 @@ import {Helmet} from "react-helmet";
 import { useState } from 'react';
 
 const Checkout = (props) => {
-
-  const initiatePayment = async () => {
-    let txnToken;
-    let oid = Math.floor(Math.random() * Date.now, {email: "email"} )
-    let ct = props.cart, sb = props.subTotal;
-    const data = {ct, sb, oid};
-    let a = await fetch(`http://localhost:3000/api/pretransaction` , {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    })
-    let txnRes = await a.json();
-    console.log(txnRes);
-    txnToken = txnRes.txnToken;
-
-    function onScriptLoad(){
-      var config = {
-      "root": "",
-      "flow": "DEFAULT",
-      "data": {
-      "orderId": oid, /* update order id */
-      "token": "txnToken", /* update token value */
-      "tokenType": "TXN_TOKEN",
-      "amount": props.subTotal /* update amount */
-      },
-      "handler": {
-      "notifyMerchant": function(eventName,data){
-      console.log("notifyMerchant handler function called");
-      console.log("eventName => ",eventName);
-      console.log("data => ",data);
-      }
-      }
-      };
-      window.Paytm.CheckoutJS.init(config).then(function onSuccess() {
-      // after successfully updating configuration, invoke JS Checkout
-      window.Paytm.CheckoutJS.invoke();
-      }).catch(function onError(error){
-      console.log("error => ",error);
-      });
-    }
-  }
   
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -56,22 +13,40 @@ const Checkout = (props) => {
   const [address, setAddress] = useState('')
   const [pincode, setPincode] = useState('')
 
-  const handleChange = (e) => {
+  const onChange = (e) => {
     if(e.target.name=='name') {
+      console.log(e.target.value)
       setName(e.target.value);
     }
-    else if(e.target.email=='email') {
+    else if(e.target.name=='email') {
+      console.log(e.target.value)
       setEmail(e.target.value);
     }
-    else if(e.target.phone=='phone') {
+    else if(e.target.name=='phone') {
+      console.log(e.target.value)
       setPhone(e.target.value);
     }
-    else if(e.target.address=='address') {
+    else if(e.target.name=='address') {
+      console.log(e.target.value)
       setAddress(e.target.value);
     }
-    else if(e.target.pincode=='pincode') {
+    else if(e.target.name=='pincode') {
+      console.log(e.target.value)
       setPincode(e.target.value);
     }
+  }
+
+  const initiatePayment = async (e) => {
+    e.preventDefault();
+    console.log("initiate payment");
+    let response = await fetch(`http://localhost:5000/api/auth/pretransaction` , {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ "name": name, "email": email, "phone": phone, "address": address, "pincode": pincode }),
+    })
+    console.log(response);
   }
 
   return (
@@ -95,6 +70,7 @@ const Checkout = (props) => {
                 type="text"
                 id="name"
                 name="name"
+                onChange={onChange}
                 className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
               />
             </div>
@@ -111,6 +87,7 @@ const Checkout = (props) => {
                   type="email"
                   id="email"
                   name="email"
+                  onChange={onChange}
                   className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                 />
               </div>
@@ -128,6 +105,7 @@ const Checkout = (props) => {
                   type="text"
                   id="address"
                   name="address"
+                  onChange={onChange}
                   row="10"
                   className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                 />
@@ -145,6 +123,7 @@ const Checkout = (props) => {
                 type="phone"
                 id="phone"
                 name="phone"
+                onChange={onChange}
                 className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
               />
             </div>
@@ -193,6 +172,7 @@ const Checkout = (props) => {
                   type="Number"
                   id="Pincode"
                   name="Pincode"
+                  onChange={onChange}
                   className="w-full bg-white rounded border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
                 />
               </div>
@@ -216,7 +196,7 @@ const Checkout = (props) => {
           <span className="font-bold">SubTototal:₹ {props.subTotal}</span>
        </div>
        <div className="mx-8">
-       <Link to="/checkout"><button disabled={true} onClick={initiatePayment} className="disabled:bg-blue-100 flex mx-auto mt-16 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"><BsFillBagCheckFill onClick={props.clearCart} className="mx-2 my-1" />Pay ₹</button></Link>
+       <Link to="/checkout"><button disabled={true} className="disabled:bg-blue-100 flex mx-auto mt-16 text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg"><BsFillBagCheckFill  onClick={initiatePayment} className="mx-2 my-1" />Pay ₹</button></Link>
        </div>
       </div>
     </>

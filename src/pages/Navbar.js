@@ -13,7 +13,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Navbar = (props) => {
 
   let navigate = useNavigate();
-  const logout = () =>{
+  const logout = () => {
     localStorage.removeItem('token');
     setEmail_id("");
     navigate("/");
@@ -24,57 +24,57 @@ const Navbar = (props) => {
   useEffect(() => {
     let ml = localStorage.getItem("token");
     console.log(ml, "eml")
-    if(ml)
-       setEmail_id(ml);
-      //  navigate("/");
+    if (ml)
+      setEmail_id(ml);
+    //  navigate("/");
   }, [])
   return (
     <>
-    <div className="flex flex-col md:flex-row md:justify-start justify-between items-center py-1 shadow-xl sticky top-0 bg-white z-10">
-       <div className="logo mx-5 my-1">
-        <Link to="/home" className="nav-link"><img width={100} height={10} src="/home_logo.png" alt="" /></Link>
-       </div>
-       <div className="nav">
-        <ul className="flex items-center space-x-4 font-bold md:text-xl my-3">
-        <Link to="/home" className="nav-link hover:text-blue-700">
-            <li><AiOutlineHome style={{width: "40px", height: "40px", color: "black"}}/></li>
+      <div className="flex flex-col md:flex-row md:justify-start justify-between items-center py-1 shadow-xl sticky top-0 bg-white z-10">
+        <div className="logo mx-5 my-1">
+          <Link to="/home" className="nav-link"><img width={100} height={10} src="/home_logo.png" alt="" /></Link>
+        </div>
+        {email_id.length!==0 && <div className="nav">
+          <ul className="flex items-center space-x-4 font-bold md:text-xl my-3">
+            <Link to="/home" className="nav-link hover:text-blue-700">
+              <li><AiOutlineHome style={{ width: "40px", height: "40px", color: "black" }} /></li>
             </Link>
-          <Link to="/maketeam" className="nav-link hover:text-blue-700">
-            <li><RiTeamLine style={{width: "40px", height: "40px", color: "black"}}/></li>
+            <Link to="/maketeam" className="nav-link hover:text-blue-700">
+              <li><RiTeamLine style={{ width: "40px", height: "40px", color: "black" }} /></li>
             </Link>
-        </ul>
-       </div>
-       <div className="cart absolute flex right-0 mx-5 top-4 cursor-pointer">
-        
-       {email_id.length===0 ?
-          (
-          // <p className="nav-link">
-          <div className="mx-4">
-            <Link to="/signup"><button className="btn btn-primary mx-3">
-              Register
-            </button> </Link> 
-            <Link to="/"><button className="btn btn-primary">
-              Login
-            </button></Link>
-            </div>
-          // </p>
-          ):
-          ( 
-            <>
-            <Link to="/signup"><AiOutlineMessage className="mx-3" style={{width: "40px", height: "40px", color: "black"}}/></Link> 
-            <a onMouseOver={()=>{setDropdown(true)}} onMouseLeave={()=>{setDropdown(false)}}>{!dropdown && <MdAccountCircle className="text-xl md:text-4xl mx-2"  style={{width: "40px", height: "40px"}} />}
-            {dropdown && <div style={{width: "180px", height: "60px", color: "black"}} onMouseOver={()=>{setDropdown(true)}} onMouseLeave={()=>{setDropdown(false)}}
-             className="absolute right-8 card pd-5 rounded-md px-5 w-80 nav-link text-bold rounded">
-              <ul>
-              <li style={{"fontWeight":"bold"}} onClick={logout} className="py-1 text-sm font-weight-bold"><div className="row"><div className="col"><FiLogOut /> </div><div className="col">Logout</div></div></li>
-              </ul>
-            </div>}
-            </a>
-          </>)}
-       {/* <Link to="/login" className="link-dark"><MdAccountCircle className="text-xl md:text-4xl mx-2" /></Link> */}
-       </div>
-    </div>
-     </>
+          </ul>
+        </div>}
+        <div className="cart absolute flex right-0 mx-5 top-4 cursor-pointer">
+
+          {/* {email_id.length === 0 ?
+            (
+              // <p className="nav-link">
+              <div className="mx-4">
+                <Link to="/signup"><button className="btn btn-primary mx-3">
+                  Register
+                </button> </Link>
+                <Link to="/"><button className="btn btn-primary">
+                  Login
+                </button></Link>
+              </div>
+              // </p>
+            ) :
+            ( */}
+             {email_id.length!==0 &&  <>
+                <Link to="/signup"><AiOutlineMessage className="mx-3" style={{ width: "40px", height: "40px", color: "black" }} /></Link>
+                <a onMouseOver={() => { setDropdown(true) }} onMouseLeave={() => { setDropdown(false) }}>{!dropdown && <MdAccountCircle className="text-xl md:text-4xl mx-2" style={{ width: "40px", height: "40px" }} />}
+                  {dropdown && <div style={{ width: "180px", height: "60px", color: "black" }} onMouseOver={() => { setDropdown(true) }} onMouseLeave={() => { setDropdown(false) }}
+                    className="absolute right-8 card pd-5 rounded-md px-5 w-80 nav-link text-bold rounded">
+                    <ul>
+                      <li style={{ "fontWeight": "bold" }} onClick={logout} className="py-1 text-sm font-weight-bold"><div className="row"><div className="col"><FiLogOut /> </div><div className="col">Logout</div></div></li>
+                    </ul>
+                  </div>}
+                </a>
+              </>}
+          {/* <Link to="/login" className="link-dark"><MdAccountCircle className="text-xl md:text-4xl mx-2" /></Link> */}
+        </div>
+      </div>
+    </>
   )
 }
 
