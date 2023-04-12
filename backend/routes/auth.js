@@ -1,29 +1,30 @@
-const express = require('express');
-const User = require('../models/User');
-const Person = require('../models/Person');
-const Playing = require('../models/Playing');
+const express = require("express");
+const User = require("../models/User");
+const Person = require("../models/Person");
+const Playing = require("../models/Playing");
 const router = express.Router();
-const { body, validationResult } = require('express-validator');
-var jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const fetchuser = require('../middleware/fetchuser');
+const { body, validationResult } = require("express-validator");
+var jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
+const fetchuser = require("../middleware/fetchuser");
 
-
-const JWT_SECTRT = 'amitisaplayer';
+const JWT_SECTRT = "amitisaplayer";
 
 // ROUTE1:-Create a User using: POST "api/auth". Does not require Auth
-router.post('/createuser', [
-    body('name','Enter a valid name').isLength({min: 3}),
-    body('signupEmail','Enter a valid email').isLength({min: 3}),
-    body('district','Enter a valid district').isLength({min: 3}),
-    body('pincode','Enter a valid pincode').isLength({min: 6}),
-    body('place','Enter a valid place'),
-    body('password').isLength({ min: 5 }),  
-    body('confirmpassword').isLength({ min: 5 }),  
-    
-] , async (req, res)=>{
-   //if there are errors, return Bad request and the errors
-   console.log(req)
+router.post(
+  "/createuser",
+  [
+    body("name", "Enter a valid name").isLength({ min: 3 }),
+    body("signupEmail", "Enter a valid email").isLength({ min: 3 }),
+    body("district", "Enter a valid district").isLength({ min: 3 }),
+    body("pincode", "Enter a valid pincode").isLength({ min: 6 }),
+    body("place", "Enter a valid place"),
+    body("password").isLength({ min: 5 }),
+    body("confirmpassword").isLength({ min: 5 }),
+  ],
+  async (req, res) => {
+    //if there are errors, return Bad request and the errors
+    console.log(req);
     const errors = validationResult(req);
     // console.log(errors,"amityadav1");
     if (!errors.isEmpty()) {
@@ -31,19 +32,22 @@ router.post('/createuser', [
       return res.status(400).json({ errors: errors.array() });
     }
     try {
-    // Check whether the user with this email exists already
-    let user = await User.findOne({signupEmail: req.body.signupEmail});
-    if(user){
-      return res.status(400).json({error: "Sorry a user with this email already exists"});
-    }
-    if(req.body.password!=req.body.confirmpassword)
-    {
-        return res.status(400).json({error: "Sorry! Password is not matched"});
-    }
-    const salt = await bcrypt.genSalt(10);
-    secPass = await bcrypt.hash(req.body.password, salt);
-    // Create a new user
-    user =await User.create({
+      // Check whether the user with this email exists already
+      let user = await User.findOne({ signupEmail: req.body.signupEmail });
+      if (user) {
+        return res
+          .status(400)
+          .json({ error: "Sorry a user with this email already exists" });
+      }
+      if (req.body.password != req.body.confirmpassword) {
+        return res
+          .status(400)
+          .json({ error: "Sorry! Password is not matched" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      secPass = await bcrypt.hash(req.body.password, salt);
+      // Create a new user
+      user = await User.create({
         name: req.body.name,
         signupEmail: req.body.signupEmail,
         district: req.body.district,
@@ -61,65 +65,73 @@ router.post('/createuser', [
       });
       const data = {
         user: {
-          id: user.id
-        }
-      }
+          id: user,
+        },
+      };
       success = true;
       const authtoken = jwt.sign(data, JWT_SECTRT);
       // console.log(authtoken);
-      res.json({success, authtoken});
+      res.json({ success, authtoken });
       // res.json(authtoken);
-    }
-    catch(error){
+    } catch (error) {
       console.error(error.message);
       res.status(500).send("Some Error Occured");
     }
-})
+  }
+);
 
 //  ROUTE2:-Authenticate a User using: POST "/api/auth/login" . No login required
-router.post('/login', [
-  body('signupEmail','Enter valid Email').isEmail(),
-  body('password','Password cannot be blank').exists(),
-  
-] , async (req, res)=>{
-      console.log(req.body)
-      let success = false;
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-      }
+router.post(
+  "/login",
+  [
+    body("signupEmail", "Enter valid Email").isEmail(),
+    body("password", "Password cannot be blank").exists(),
+  ],
+  async (req, res) => {
+    console.log(req.body);
+    let success = false;
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-const {signupEmail, password} = req.body;
-try{
-    let user = await User.findOne({signupEmail});
-    if(!user){
-      success = false
-      return res.status(400).json({success, error: "Please try to login with correct credential"});
-    }
-    const passwordCompare = await bcrypt.compare(password, user.password);
-    if(!passwordCompare)
-    {
-      success = false
-      return res.status(400).json({success, error: "Please try to login with correct credential Second"});
-    }
-    const data = {
-      user: {
-        id: user.id
+    const { signupEmail, password } = req.body;
+    try {
+      let user = await User.findOne({ signupEmail });
+      if (!user) {
+        success = false;
+        return res.status(400).json({
+          success,
+          error: "Please try to login with correct credential",
+        });
       }
+      const passwordCompare = await bcrypt.compare(password, user.password);
+      if (!passwordCompare) {
+        success = false;
+        return res.status(400).json({
+          success,
+          error: "Please try to login with correct credential Second",
+        });
+      }
+      const data = {
+        user: {
+          id: user,
+        },
+      };
+      const authtoken = jwt.sign(data, JWT_SECTRT);
+      console.log(user.signupEmail);
+      const mail = user.signupEmail;
+      console.log("Yes");
+      success = true;
+      // const mail = data.email;
+      res.json({ success, authtoken, mail });
+      // res.status(success).json(authtoken);
+    } catch (error) {
+      console.error(error.message);
+      res.status(500).send("internal server Error occured");
     }
-    const authtoken = jwt.sign(data, JWT_SECTRT);
-    console.log(user.signupEmail)
-    const mail = user.signupEmail;
-    console.log("Yes")
-    success = true;
-    // const mail = data.email;
-    res.json({success, authtoken,mail});
-    // res.status(success).json(authtoken);
-} catch(error){
-  console.error(error.message);
-  res.status(500).send("internal server Error occured");
-}
-  })
+  }
+);
 
 // Logout Api
 
@@ -140,38 +152,34 @@ try{
 
 //  ROUTE3:- Get logged in user detail "/api/auth/getuser" . login required
 
-router.post('/getuser', fetchuser, async (req, res)=> {
-  
-  try{
-     userId = req.user.id;
-     const user = await User.findById(userId).select("-password");
-     res.send(user);
-  
-  }catch(error){
+router.post("/getuser", fetchuser, async (req, res) => {
+  try {
+    userId = req.user.id;
+    const user = await User.findById(userId).select("-password");
+    res.send(user);
+  } catch (error) {
     console.error(error.message);
     res.status(500).send("internal server Error occured");
   }
-  })
-router.post('/finduser', async (req, res)=> {
-  
-  try{
-     const user = await User.findOne({signupEmail: req.body.id}).select("-password");
-     const people1 = await Person.findOne({userId: req.body.id})
-     console.log(people1,"people1");
-     let l = people1.profile_img.length;
-     let img1 = "1680012998583_Screenshot (11).png";
-     if(l>0)
-     {
-         img1 = people1.profile_img[l-1].image_profile;
-     }
-     console.log(img1,"img1");
-     res.send({img1: img1, user: user});
-  
-  }catch(error){
+});
+router.post("/finduser", async (req, res) => {
+  try {
+    const user = await User.findOne({ signupEmail: req.body.id }).select(
+      "-password"
+    );
+    const people1 = await Person.findOne({ userId: req.body.id });
+    console.log(people1, "people1");
+    let l = people1.profile_img.length;
+    let img1 = "1680012998583_Screenshot (11).png";
+    if (l > 0) {
+      img1 = people1.profile_img[l - 1].image_profile;
+    }
+    console.log(img1, "img1");
+    res.send({ img1: img1, user: user });
+  } catch (error) {
     console.error(error.message);
     res.status(500).send("internal server Error occured");
   }
-  })
+});
 
-
-module.exports = router
+module.exports = router;
