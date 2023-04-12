@@ -37,7 +37,7 @@ const Profile = () => {
         const formdata = new FormData();
         formdata.append('myimage', myimage.profileImage, myimage.profileImage.name);
         formdata.append('email', p2);
-        let url = 'http://localhost:5000/api/file/uploadpost';
+        let url = 'http://localhost:5000/api/file/uploadimage';
         try {
             let response = await axios.post(url, formdata);
             toast.success("Inserted Successfully");
@@ -142,12 +142,13 @@ const Profile = () => {
                                 <div className="col">
                                     district
                                 </div>
-                                <div className="col-md-1 my-2">
+                                <div className="col">
+                                {/* <div className="col-md-1 my-2"> */}
                                     {user.district}
                                 </div>
-                                <div className="col">
+                                {/* <div className="col">
                                     <button type="button" className="btn btn-danger" style={{ width: "70px" }}>Edit</button>
-                                </div>
+                                </div> */}
                             </div>
                             <div className="row my-5">
                                 <div className="col">

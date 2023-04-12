@@ -1,6 +1,7 @@
 const express = require('express');
 const User = require('../models/User');
 const Person = require('../models/Person');
+const Playing = require('../models/Playing');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 var jwt = require('jsonwebtoken');
@@ -52,6 +53,10 @@ router.post('/createuser', [
         password: secPass,
       });
       await Person.create({
+        userId: req.body.signupEmail,
+      });
+
+      await Playing.create({
         userId: req.body.signupEmail,
       });
       const data = {
@@ -154,7 +159,11 @@ router.post('/finduser', async (req, res)=> {
      const people1 = await Person.findOne({userId: req.body.id})
      console.log(people1,"people1");
      let l = people1.profile_img.length;
-     let img1 = people1.profile_img[l-1].image_profile;
+     let img1 = "1680012998583_Screenshot (11).png";
+     if(l>0)
+     {
+         img1 = people1.profile_img[l-1].image_profile;
+     }
      console.log(img1,"img1");
      res.send({img1: img1, user: user});
   

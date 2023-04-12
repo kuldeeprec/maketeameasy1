@@ -1,10 +1,14 @@
 import { React, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import './home.css'
 import { BsFillCheckCircleFill } from 'react-icons/bs';
+import { RxCrossCircled } from 'react-icons/rx';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Home = () => {
 
+    let navigate = useNavigate();
     const [pendPlayer, setPendPlayer] = useState([]);
     const fetchNoti_friend = async (event) => {
         let p2 = localStorage.getItem('user_id');
@@ -20,7 +24,7 @@ const Home = () => {
         );
         const json = await response.json();
         setPendPlayer(json)
-        // console.log(json);
+        console.log(json);
     }
     const [acceptPlayer, setAcceptPlayer] = useState([]);
     const fetchAccep_friend = async (event) => {
@@ -36,16 +40,58 @@ const Home = () => {
             }
         );
         const json = await response.json();
-        setPendPlayer(json)
+        setAcceptPlayer(json)
         // console.log(json);
     }
 
-    const acc_playing_friend = async (event) => {
-        let p1 = event.target.value;
-        console.log(event.target.value, "p1");
+    const acc_playing_friend = async (mess_id,event) => {
+        let p1 = event;
+        console.log(mess_id,p1, "p1");
         let p2 = localStorage.getItem('user_id');
         const response = await fetch(
             `http://localhost:5000/api/playing_live/acceptpendsendnotification`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ send_id: p1, reci_id: p2, mess_id: mess_id })
+            }
+        );
+        const json = await response.json();
+        console.log(json);
+        if(json.message=="success")
+        {
+            toast.success('Accept Successfully!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              navigate("/home");
+        }
+        else
+        {
+            toast.error(json.message , {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+        }
+    }
+    const del_playing_friend = async (event) => {
+        let p1 = event;
+        console.log(p1, "p1");
+        let p2 = localStorage.getItem('user_id');
+        const response = await fetch(
+            `http://localhost:5000/api/playing_live/deletesendnotification`,
             {
                 method: "POST",
                 headers: {
@@ -56,15 +102,65 @@ const Home = () => {
         );
         const json = await response.json();
         console.log(json);
+        if(json.message=="success")
+        {
+            toast.success('Deleted Successfully!', {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+              navigate("/home");
+        }
+        else
+        {
+            toast.error(json.message , {
+                position: "top-right",
+                autoClose: 5000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+              });
+        }
+    }
+
+    const [allpost, setAllpost] = useState([]);
+    const fetch_post = async () => {
+        let p2 = localStorage.getItem('user_id');
+        const response = await fetch(
+            `http://localhost:5000/api/searchplayer/fetchpost`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ id: p2 })
+            }
+        );
+        const json = await response.json();
+        // console.log(typeof(json.all_post),"typeof");
+        let post_ = [];
+        json.all_post.forEach(function (item, index) {
+            post_.push(item);
+            console.log(typeof(item.image_file),"yes");
+        })
+        setAllpost(post_)
     }
 
     useEffect(() => {
         fetchNoti_friend();
         fetchAccep_friend();
+        fetch_post();
     }, []);
 
     return (
         <div>
+            <ToastContainer />
             <div className="row">
                 <div className="col">
 
@@ -107,12 +203,12 @@ const Home = () => {
                                         <span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>Friends</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <a href="#" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                         <svg aria-hidden="true" className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"></path></svg>
                                         <span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>Messenger</span>
                                     </a>
-                                </li>
+                                </li> */}
                                 {/* <li>
                                     <a href="/news" className="flex items-center p-2 text-base font-normal text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                                         <svg aria-hidden="true" className="flex-shrink-0 w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clip-rule="evenodd"></path></svg>
@@ -127,70 +223,35 @@ const Home = () => {
                 <div className="col">
                     <div
                         className="100 items-center justify-center leading-7 space-y-8 p-8 h-full">
-                        <div>
-                            <div className="row">
-                                <div className="col-md-2">
-                                    <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
+                            {/* {allpost.forEach(function (item, index) {
+                            console.log(item.image_file,"n")
+                            })} */}
+                        {allpost.forEach(function (item, index) {
+                            <div>
+                                <div className="row">
+                                    <div className="col-md-2">
+                                        <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src={`../../../UserPosts/${item.image_file}`} />
+                                    </div>
+                                    <div className="col-md-2 my-3">
+                                        <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
+                                    </div>
                                 </div>
-                                <div className="col-md-2 my-3">
-                                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
+                                <p>Make Change in thought, life automatically will Change . . .</p>
+                                <img style={{ width: "300px", height: "300px"}} value={index} src={`/UserPosts/${item.image_file}`} alt="post_image" className="" />
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Like</button>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Comment</button>
+                                    </div>
                                 </div>
-                            </div>
-                            <p>Make Change in thought, life automatically will Change . . .</p>
-                            <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Like</button>
-                                </div>
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Comment</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="row">
-                                <div className="col-md-2">
-                                    <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
-                                </div>
-                                <div className="col-md-2 my-3">
-                                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
-                                </div>
-                            </div>
-                            <p>Make Change in thought, life automatically will Change . . .</p>
-                            <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Like</button>
-                                </div>
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Comment</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div>
-                            <div className="row">
-                                <div className="col-md-2">
-                                    <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />
-                                </div>
-                                <div className="col-md-2 my-3">
-                                    <p style={{ fontSize: "15x", fontWeight: "bold" }}>Aiswariya Roy</p>
-                                </div>
-                            </div>
-                            <p>Make Change in thought, life automatically will Change . . .</p>
-                            <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
-                            <div className="row">
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Like</button>
-                                </div>
-                                <div className="col-md-6">
-                                    <button type="button" className="btn btn-primary my-2" style={{ width: "100px" }}>Comment</button>
-                                </div>
-                            </div>
-                        </div>
+                            </div>})
+}
                     </div>
                 </div>
                 <div className="col">
-                    <aside id="sticky-div2" className="w-64" aria-label="Sidebar">
+                    <aside id="sticky-div2" className="w-66" aria-label="Sidebar">
                         <div className="overflow-y-auto py-4 px-3 bg-gray-50 rounded dark:bg-gray-800">
                             <table class="table">
                                 <thead class="thead-dark">
@@ -199,19 +260,20 @@ const Home = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pendPlayer.length!==0 ? (
+                                    {pendPlayer.length !== 0 ? (
                                         pendPlayer.map(players =>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td onClick={acc_playing_friend}>        
-                                                <span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>{players.name}</span>
-                                            </td>
-                                            <td><span className="inline-flex justify-center items-center"><Link href='#'><BsFillCheckCircleFill style={{ fontSize: "30px" }} /></Link></span></td>
-                                        </tr>
+                                            <tr>
+                                                <th scope="row">1</th>
+                                                <td>
+                                                    <span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>{players.name}</span>
+                                                </td>
+                                                <td value={players.friend_id} onClick={()=>acc_playing_friend(players._id,players.friend_id)}><span className="inline-flex justify-center items-center"><Link href='#'><BsFillCheckCircleFill style={{ fontSize: "30px" }} /></Link></span></td>
+                                                <td onClick={()=>del_playing_friend(players.friend_id)}><span className="inline-flex justify-center items-center"><Link href='#'><RxCrossCircled style={{ fontSize: "30px" }} /></Link></span></td>
+                                            </tr>
+                                        )
                                     )
-                                    )
-                                    :
-                                    (<p>No Pending Player</p>)}
+                                        :
+                                        (<p>No Pending Player</p>)}
                                 </tbody>
                             </table>
 
@@ -222,14 +284,15 @@ const Home = () => {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                {acceptPlayer.length!==0 ? (acceptPlayer.map(players1 =>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td><span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>{players1.name}</span></td>
-                                        <td><span className="inline-flex justify-center items-center"><button type="button" className="btn btn-danger my-2" style={{ width: "80px" }}>Decline</button></span></td>
-                                    </tr>)
-                                ) : 
-                                (<p>No Accepted Player</p>)}
+                                    {acceptPlayer.length !== 0 ? (acceptPlayer.map(players1 =>
+                                        <tr>
+                                            <th scope="row">1</th>
+                                            <td><span className="flex-1 ml-3 whitespace-nowrap" style={{ fontWeight: "bold" }}>{players1.name}</span></td>
+                                            {/* <td><span className="inline-flex justify-center items-center"><button type="button" className="btn btn-primary my-2" style={{ width: "80px" }}>Decline</button></span></td> */}
+                                            <td onClick={()=>del_playing_friend(players1.friend_id)}><span className="inline-flex justify-center items-center"><button type="button" className="btn btn-danger my-2" style={{ width: "80px" }}>Delete</button></span></td>
+                                        </tr>)
+                                    ) :
+                                        (<p>No Accepted Player</p>)}
                                 </tbody>
                             </table>
                             {/* {pendPlayer.map(players =>

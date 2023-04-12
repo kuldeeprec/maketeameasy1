@@ -21,4 +21,21 @@ router.post('/getplayer', async (req, res) => {
             }
 })
 
+router.post('/fetchpost', async (req, res) => {
+       console.log("fetchpost")
+       try{
+       let people = await Person.find({userId: req.body.id});
+       // console.log(people,"people");
+       let all_post = people[0].post;
+
+       console.log(typeof(all_post),"all_post");
+
+       res.status(200).json({all_post});
+       }
+       catch(error){
+              console.error(error.message);
+              res.status(500).send("internal server Error occured");
+            }
+})
+
 module.exports = router

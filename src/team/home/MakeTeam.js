@@ -1,5 +1,7 @@
 import { React, useState } from 'react'
 import './maketeam.css'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const MakeTeam = () => {
 
@@ -62,45 +64,48 @@ const MakeTeam = () => {
     console.log(json1, json2, json3, json4, "json1")
     const pending_friends = new Map();
     let newjson = json1.filter((item) => item.signupEmail !== p);
+    setPlayPlayers1(newjson);
 
     // list of confirm friend
-    let con_fri = [];
-    newjson.map(players => {
-      json4.map(player_obj => {
-        if (player_obj.friend_id == players.signupEmail) {
-          con_fri.push(players);
-        }
-      })
-    })
-    setPlayPlayers1(con_fri);
+    // let con_fri = [];
+    // newjson.map(players => {
+    //   json4.map(player_obj => {
+    //     if (player_obj.friend_id == players.signupEmail) {
+    //       con_fri.push(players);
+    //     }
+    //   })
+    // })
+    // setPlayPlayers1(con_fri);
 
-    // list of not friend and also find pending recieve and sender friend store in pen_fri.
-    let not_fri = newjson;
-    let pen_fri = [];
-    json2.map(player_obj => {
-      pen_fri.push(player_obj);
-      pending_friends.set(player_obj.friend_id, false)
-      not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
-    })
-    json3.map(player_obj => {
-      pen_fri.push(player_obj);
-      pending_friends.set(player_obj.friend_id, true)
-      not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
-    })
-    json4.map(player_obj => {
-      not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
-    })
-    json1.map(player_obj => {
-      not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.signupEmail);
-    })
-    json1.map(player_obj => {
-      pen_fri = pen_fri.filter((item) => item.friend_id !== player_obj.signupEmail);
-    })
+    // // list of not friend and also find pending recieve and sender friend store in pen_fri.
+    // let not_fri = newjson;
+    // let pen_fri = [];
+    // json2.map(player_obj => {
+    //   console.log(player_obj,"pen_play")
+    //   pen_fri.push(player_obj);
+    //   pending_friends.set(player_obj.friend_id, false)
+    //   not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
+    // })
+    // json3.map(player_obj => {
+    //   pen_fri.push(player_obj);
+    //   pending_friends.set(player_obj.friend_id, true)
+    //   not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
+    // })
+    // json4.map(player_obj => {
+    //   not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.friend_id);
+    // })
+    // json1.map(player_obj => {
+    //   not_fri = not_fri.filter((item) => item.signupEmail !== player_obj.signupEmail);
+    // })
+    // // let pen_fri1 = pen_fri;
+    // newjson.map(player_obj => {
+    //   pen_fri = pen_fri.filter((item) => item.friend_id !== player_obj.signupEmail);
+    // })
     
-    setPlayPlayers2(pen_fri) 
-    setPlayPlayers3(not_fri)
-    // pending_friends.set(players.signupEmail, false)
-    setMapfriend(pending_friends);
+    // setPlayPlayers2(pen_fri) 
+    // setPlayPlayers3(not_fri)
+    // // pending_friends.set(players.signupEmail, false)
+    // setMapfriend(pending_friends);
   }
 
   const PendingFriend = async (event) => {
@@ -143,7 +148,7 @@ const MakeTeam = () => {
 
   const handleSubmit = async (e) => {
     // let p1 = e.target.value;
-    e.preventDefault();
+    console.log(e,"e");
     console.log( credentials.message, credentials.playing_date, "p1");
     let p2 = localStorage.getItem('user_id');
     const response = await fetch(`http://localhost:5000/api/playing_live/savemessage`, {
@@ -151,10 +156,34 @@ const MakeTeam = () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ message: credentials.message, playing_date: credentials.playing_date, send_id: p2, reci_id: "faizabadamit23@gmail.com" })
+      body: JSON.stringify({ message: credentials.message, playing_date: credentials.playing_date, send_id: p2, reci_id: e })
     });
     const json = await response.json();
     console.log(json);
+    if(json.message=="success")
+    {
+      toast.success('Request Send Successfully!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
+    else
+    {
+      toast.error('Already Sent or Request Failed!', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+    }
   }
 
   const onChange = (e) => {
@@ -164,6 +193,7 @@ const MakeTeam = () => {
   return (
     <div>
       <div className="my-1">
+        <ToastContainer />
         <div className="row">
           <div className="col-sm text-center" style={{
             backgroundImage: `url(../img/world_map_hd.jpg)`
@@ -198,7 +228,7 @@ const MakeTeam = () => {
                 <img src="https://images.unsplash.com/photo-1466112928291-0903b80a9466?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=873&q=80/200x100/d4d4d4/000000" alt="" className="" />
                 <div className="row">
                   <div className="col my-3">
-                    <form value={playPlayers1.signupEmail} onSubmit={handleSubmit} method="POST">
+                    <div>
                       <div className="row">
                         <div className="col-md-4">
                           <input id="message" style={{ width: "150px" }} onChange={onChange} type="text" name="message" className="form-control" placeholder="Message" />
@@ -207,13 +237,14 @@ const MakeTeam = () => {
                           <input id="playing_date" style={{ width: "150px" }} onChange={onChange} type="text" name="playing_date" className="form-control" placeholder="DD-MM-YYYY" />
                         </div>
                         <div className="col-md-4">
-                          <button type="submit" value={playPlayers1.signupEmail} className="btn btn-primary" style={{ width: "150px" }}>Send</button>
+                          <button type="submit" value={players.signupEmail} onClick={()=>handleSubmit(players.signupEmail)} className="btn btn-primary" style={{ width: "150px" }}>Send</button>
                         </div>
                       </div>
-                    </form>
+                    </div>
                   </div>
                 </div>
               </div>)}
+              {console.log(playPlayers2,"playPlayers2")}
               {playPlayers2.map(players => <div>
                 <div className="row">
                   <div className="col-md-2">
@@ -235,7 +266,9 @@ const MakeTeam = () => {
                     </div>)}
                 </div>
               </div>)}
-              {playPlayers3.map(players => <div>
+              {console.log(playPlayers1,playPlayers2,playPlayers3,"playPlayers3")}
+              {
+              playPlayers3.map(players => <div>
                 <div className="row">
                   <div className="col-md-2">
                     <img style={{ width: "60px", height: "60px" }} className="rounded-circle my-2" alt="avatar1" src="https://mdbcdn.b-cdn.net/img/new/avatars/9.webp" />

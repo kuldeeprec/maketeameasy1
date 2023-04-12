@@ -128,8 +128,8 @@ const Recording = () => {
               <div className="Player2">
                 <ReactPlayer
                   ref={playerRef}
-                  // url='https://www.youtube.com/watch?v=m8u-18Q0s7I'
-                  url='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4'
+                  url='https://www.youtube.com/watch?v=m8u-18Q0s7I'
+                  // url='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4'
                   width='100%'
                   height='100%'
                   playing={playing}
